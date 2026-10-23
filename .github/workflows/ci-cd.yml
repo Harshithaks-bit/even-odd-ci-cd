@@ -1,13 +1,13 @@
-name: Java Even Odd CI Pipeline
+
+name: Java Even-Odd CI/CD Pipeline
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  build-test:
+  build-test-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,5 +21,18 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Build and test
-        run: mvn --batch-mode clean verify
+      - name: Build and test Java
+        run: mvn clean verify
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: harrshithanayak/even-odd:latest
