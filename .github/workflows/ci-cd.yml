@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-test-and-push:
+  build-test:
+    name: Build and Test
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,6 +23,14 @@ jobs:
 
       - name: Build and test Java
         run: mvn clean verify
+
+  docker-push:
+    name: Docker Build and Push
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
